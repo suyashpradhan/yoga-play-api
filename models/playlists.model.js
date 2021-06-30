@@ -1,19 +1,22 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const playlistsSchema = new Schema({
+const PlaylistSchema = new Schema({
   playListName: {
     type: String,
     required: [true, "Playlist name should not be empty"],
   },
-  videos: [
+  playListDescription: {
+    type: String,
+  },
+  video: [
     {
-      type: mongoose.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Video",
     },
   ],
 });
 
-const Playlists = mongoose.model("Playlists", playlistsSchema);
+const Playlists = mongoose.model("Playlists", PlaylistSchema);
 
-module.exports = Playlists;
+module.exports = { Playlists, PlaylistSchema };

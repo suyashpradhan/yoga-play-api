@@ -14,8 +14,8 @@ const authValidator = async (req, res, next) => {
 
     const { _id } = jwt.verify(token, process.env.TOKEN_SECRET);
     const user = await User.findById({ _id })
-      .select("-password -__v")
-      .populate("likedVideos, watchLater, playlists, history");
+      .select("-password -v")
+      .populate("history");
     req.user = user;
     next();
   } catch (error) {

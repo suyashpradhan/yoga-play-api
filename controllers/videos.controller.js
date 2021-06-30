@@ -1,5 +1,5 @@
 const express = require("express");
-const Video = require("../models/videos.model");
+const { Video } = require("../models/videos.model");
 
 const fetchAllVideos = async (req, res) => {
   try {

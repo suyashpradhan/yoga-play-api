@@ -1,21 +1,13 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const historySchema = new Schema({
-  userId: {
+const HistorySchema = new Schema({
+  videos: {
     type: mongoose.Types.ObjectId,
-    ref: "User",
+    ref: "Video",
   },
-  videos: [
-    {
-      _id: {
-        type: mongoose.Types.ObjectId,
-        ref: "Video",
-      },
-    },
-  ],
 });
 
-const History = mongoose.model("History", historySchema);
+const History = mongoose.model("History", HistorySchema);
 
-module.exports = History;
+module.exports = { History, HistorySchema };

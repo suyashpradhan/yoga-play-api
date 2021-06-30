@@ -1,1 +1,1 @@
-# v1-yoga-play-api
+# yoga-play-api

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const moment = require("moment-timezone");
 const bcrypt = require("bcryptjs");
 const { isStrongPassword, isEmail } = require("validator");
+const { PlaylistSchema } = require("./playlists.model");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -23,6 +23,33 @@ const userSchema = new Schema({
       "Password requirements: Minimum 8 characters long, One Uppercase Character, One Lowercase Character & One Special Character",
     ],
   },
+  profile_image: {
+    type: String,
+  },
+  likedVideos: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Video",
+    },
+  ],
+  watchLater: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Video",
+    },
+  ],
+  history: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Video",
+    },
+  ],
+  playlists: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Playlists",
+    },
+  ],
 });
 
 //Middleware after user is created!

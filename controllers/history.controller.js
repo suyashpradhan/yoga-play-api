@@ -1,100 +1,68 @@
-const { concat, remove, pull } = require("lodash");
-const History = require("../models/history.model");
+const _ = require("lodash");
 
-//Create History For Newly Created User
-const createHistory = async (req, res, next) => {
-  const { user } = req;
-  let history;
-
-  try {
-    history = await History.findOne({ userId: user._id });
-
-    if (!history) {
-      history = new History({ userId: user._id, videos: [] });
-      history = await history.save();
-    }
-
-    req.history = history;
-    next();
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Unable to create history",
-    });
-  }
-};
-
-//Populate Videos In History
-const populateVideosInHistory = async (history) => {
-  const populatedData = await history.populate("videos._id").execPopulate();
-  console.log("Line32", populatedData);
-  const data = history.videos.map((video) => video._id);
-  console.log("Line34", data);
-};
-
-//Fetch User Specific Videos In History
-const fetchUserHistory = async (req, res) => {
-  const { history } = req;
-  try {
-    await populateVideosInHistory(history);
-    res
-      .status(200)
-      .json({ success: true, message: "Videos In History", history });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Unable to fetch videos",
-      error: error.message,
-    });
-  }
-};
-
-//Post Method To Add Video In History Section
-const addVideoToHistory = async (req, res) => {
-  const { _id } = req.body;
-  const { history } = req;
-  history.videos.push(_id);
-
-  const updatedHistory = await history.save();
-  const videosInHistory = await populateVideosInHistory(updatedHistory);
-  res.status(200).json({ success: true, history: videosInHistory });
-};
-
-const removeVideoFromHistory = async (req, res) => {
-  const { _id } = req.body;
-  const { history } = req;
-
-  history.videos.pull(_id);
-  const updatedHistory = await history.save();
-  const videosInHistory = await populateVideosInHistory(updatedHistory);
+const getHistory = async (req, res) => {
+  const user = req.user;
+  console.log(req.user);
   res.status(200).json({
     success: true,
-    message: "Video Cleared from History",
-    history: videosInHistory,
+    history: user.history,
   });
 };
-
-const clearHistory = async (req, res) => {
-  const { history } = req;
-
+const addToHistory = async (req, res) => {
+  const user = req.user;
+  const { videoId } = req.body;
   try {
-    history.videos = [];
-    const updatedHistory = await history.save();
-    const videosInHistory = await populateVideosInHistory(updatedHistory);
-    res.status(200).json({
+    user.history.push(videoId);
+    await user.save();
+    res.status(201).json({
       success: true,
-      message: "History Cleared",
-      history: videosInHistory,
+      message: "Video added to user History",
     });
-  } catch (error) {
-    res.status(400).json({ success: false, message: "Something went wrong" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "error in adding video to history",
+    });
   }
 };
-
+const removeFromHistory = async (req, res) => {
+  const user = req.user;
+  const { videoId } = req.body;
+  try {
+    user.history.pull(videoId);
+    await user.save();
+    res.status(201).json({
+      success: true,
+      message: "video removed from history",
+      history: user.history,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error in removing video from history",
+      errMessage: err.errMessage,
+    });
+  }
+};
+const clearHistory = async (req, res) => {
+  const user = req.user;
+  try {
+    user.history = [];
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "cleared history",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "error in clearing history",
+    });
+  }
+};
 module.exports = {
-  createHistory,
-  fetchUserHistory,
-  addVideoToHistory,
-  removeVideoFromHistory,
+  getHistory,
+  addToHistory,
+  removeFromHistory,
   clearHistory,
 };
