@@ -8,8 +8,7 @@ const authValidator = require("./middlewares/authValidator.middleware");
 const registerUser = require("./routes/signup.routes");
 const login = require("./routes/signIn.routes");
 const historyRoute = require("./routes/history.routes");
-
-const { addVideos } = require("./models/videos.model");
+const favouriteRoute = require("./routes/favourites.routes");
 
 app.use(express.json());
 app.use(cors());
@@ -26,7 +25,7 @@ app.get("/", (req, res) => {
 app.use("/videos", videosRoute);
 app.use("/register", registerUser);
 app.use("/login", login);
-app.use(authValidator);
-app.use("/history", historyRoute);
+app.use("/favourites", authValidator,favouriteRoute);
+app.use("/history", authValidator,historyRoute);
 
 app.listen(PORT, () => console.log(`App running on ${PORT}`));

@@ -1,100 +1,85 @@
-const { concat, remove, pull } = require("lodash");
 const History = require("../models/history.model");
+const { concat, remove } = require("lodash");
+const populateVideos = require("../utils/populateVideos.utils")
 
-//Create History For Newly Created User
-const createHistory = async (req, res, next) => {
-  const { user } = req;
-  let history;
-
+const createUserHistoryDocument = async (req, res, next) => {
   try {
-    history = await History.findOne({ userId: user._id });
+    const { user } = req;
+    let history = await History.findOne({ userId: user._id });
 
     if (!history) {
       history = new History({ userId: user._id, videos: [] });
       history = await history.save();
     }
-
     req.history = history;
     next();
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Unable to create history",
+      message: "Unable to create user's watch history",
+      errorMessage: error.message,
     });
   }
 };
 
-//Populate Videos In History
-const populateVideosInHistory = async (history) => {
-  const populatedData = await history.populate("videos._id").execPopulate();
-  console.log("Line32", populatedData);
-  const data = history.videos.map((video) => video._id);
-  console.log("Line34", data);
-};
-
-//Fetch User Specific Videos In History
-const fetchUserHistory = async (req, res) => {
-  const { history } = req;
+const fetchUserWatchHistory = async (req, res) => {
   try {
-    await populateVideosInHistory(history);
-    res
-      .status(200)
-      .json({ success: true, message: "Videos In History", history });
-  } catch (error) {
+    let { history } = req;
+    let videosInHistory = await populateVideos(history);
+    res.status(200).json({ success: true, videosInHistory });
+  } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Unable to fetch videos",
-      error: error.message,
+      message: "Unable to fetch user's watch history",
+      errMessage: err.message,
     });
   }
 };
 
-//Post Method To Add Video In History Section
-const addVideoToHistory = async (req, res) => {
+const addVideoInHistory = async (req, res) => {
   const { _id } = req.body;
   const { history } = req;
-  history.videos.push(_id);
+  const videoExists = history.videos.some((video) => video._id == _id);
+  if (videoExists) {
+    remove(history.videos, (video) => video._id == _id);
+    history.videos = concat(history.videos, { _id, isActive: true });
+  } else {
+    history.videos.push({ _id, isActive: true });
+  }
 
-  const updatedHistory = await history.save();
-  const videosInHistory = await populateVideosInHistory(updatedHistory);
+  let updatedHistory = await history.save();
+  let videosInHistory = await populateVideos(updatedHistory);
   res.status(200).json({ success: true, history: videosInHistory });
 };
 
 const removeVideoFromHistory = async (req, res) => {
   const { _id } = req.body;
   const { history } = req;
-
-  history.videos.pull(_id);
-  const updatedHistory = await history.save();
-  const videosInHistory = await populateVideosInHistory(updatedHistory);
-  res.status(200).json({
-    success: true,
-    message: "Video Cleared from History",
-    history: videosInHistory,
-  });
+  for (let video of history.videos) {
+    if (video._id == _id) {
+      video.isActive = false;
+      break;
+    }
+  }
+  let updatedHistory = await history.save();
+  let videosInHistory = await populateVideos(updatedHistory);
+  res.status(200).json({ success: true, history: videosInHistory });
 };
 
-const clearHistory = async (req, res) => {
-  const { history } = req;
-
-  try {
-    history.videos = [];
-    const updatedHistory = await history.save();
-    const videosInHistory = await populateVideosInHistory(updatedHistory);
-    res.status(200).json({
-      success: true,
-      message: "History Cleared",
-      history: videosInHistory,
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, message: "Something went wrong" });
+const clearUserHistory = async (req, res) => {
+  let { history } = req;
+  for (let video of history.videos) {
+    video.isActive = false;
   }
+  let clearedHistory = await history.save();
+  let videosInHistory = await populateVideos(clearedHistory);
+  res.status(200).json({ success: true, history: videosInHistory });
 };
 
 module.exports = {
-  createHistory,
-  fetchUserHistory,
-  addVideoToHistory,
+  createUserHistoryDocument,
+  fetchUserWatchHistory,
+  addVideoInHistory,
   removeVideoFromHistory,
-  clearHistory,
+  clearUserHistory,
 };

@@ -1,20 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const {
-  createHistory,
-  fetchUserHistory,
-  addVideoToHistory,
+  createUserHistoryDocument,
+  fetchUserWatchHistory,
+  addVideoInHistory,
   removeVideoFromHistory,
-  clearHistory,
+  clearUserHistory,
 } = require("../controllers/history.controller");
 
-router.use(createHistory);
+router.use(createUserHistoryDocument);
 
 router
   .route("/")
-  .get(fetchUserHistory)
-  .post(addVideoToHistory)
+  .get(fetchUserWatchHistory)
+  .post(addVideoInHistory)
   .put(removeVideoFromHistory)
-  .delete(clearHistory);
+  .delete(clearUserHistory);
 
 module.exports = router;

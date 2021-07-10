@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
-const moment = require("moment-timezone");
 const bcrypt = require("bcryptjs");
 const { isStrongPassword, isEmail } = require("validator");
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
+const UserSchema = new Schema({
+  userName: {
+    type: String,
+    required: [true, "Username is required"],
+  },
   fullName: {
     type: String,
     required: true,
@@ -26,25 +29,12 @@ const userSchema = new Schema({
 });
 
 //Middleware after user is created!
-userSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function(next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-//Static method for login
-userSchema.statics.login = async function (email, password) {
-  const matchedUser = await this.findOne({ email });
+const User = mongoose.model("Users", UserSchema);
 
-  if (matchedUser) {
-    const auth = await bcrypt.compare(password, matchedUser.password);
-    if (auth) {
-      return matchedUser;
-    }
-  }
-  throw Error("invalid");
-};
-
-const User = mongoose.model("Users", userSchema);
-
-module.exports = { User, userSchema };
+module.exports = { User, UserSchema };

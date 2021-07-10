@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const historySchema = new Schema({
+const HistorySchema = new Schema({
   userId: {
     type: mongoose.Types.ObjectId,
     ref: "User",
@@ -12,10 +12,11 @@ const historySchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "Video",
       },
+      isActive:Boolean
     },
   ],
 });
 
-const History = mongoose.model("History", historySchema);
+const History = mongoose.model("History", HistorySchema);
 
 module.exports = History;

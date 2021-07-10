@@ -12,6 +12,7 @@ const FavouritesSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "Video",
       },
+      isActive: Boolean
     },
   ],
 });
