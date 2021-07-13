@@ -26,7 +26,7 @@ const fetchUserWatchHistory = async (req, res) => {
   try {
     let { history } = req;
     let videosInHistory = await populateVideos(history);
-    res.status(200).json({ success: true, videosInHistory });
+    res.status(200).json({ success: true, videosInHistory: videosInHistory });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -49,7 +49,7 @@ const addVideoInHistory = async (req, res) => {
 
   let updatedHistory = await history.save();
   let videosInHistory = await populateVideos(updatedHistory);
-  res.status(200).json({ success: true, history: videosInHistory });
+  res.status(200).json({ success: true, videosInHistory });
 };
 
 const removeVideoFromHistory = async (req, res) => {

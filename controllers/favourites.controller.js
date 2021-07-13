@@ -1,4 +1,5 @@
 const Favourites = require("../models/favourites.model");
+const populateVideos = require("../utils/populateVideos.utils")
 
 const createUserFavouriteDocument = async (req, res, next) => {
   try {
@@ -20,11 +21,6 @@ const createUserFavouriteDocument = async (req, res, next) => {
   }
 };
 
-const populateVideos = async (favouriteVideo) => {
-  favouriteVideo.videos = favouriteVideo.videos.filter((video) => video.isActive);
-  favouriteVideo = await favouriteVideo.populate("videos._id").execPopulate();
-  return favouriteVideo.videos.map((video) => video._id);
-};
 
 const fetchUserFavouriteVideos = async (req, res) => {
   try {
@@ -42,10 +38,10 @@ const fetchUserFavouriteVideos = async (req, res) => {
 const actionOnFavouriteVideos = async (req, res) => {
   const { _id } = req.body;
   const { favouriteVideo } = req;
-  const videoExists = favouriteVideo.videos.some((video) => video._id === _id);
+  const videoExists = favouriteVideo.videos.some((video) => video._id == _id);
   if (videoExists) {
     for (let video of favouriteVideo.videos) {
-      if (video._id === _id) {
+      if (video._id == _id) {
         video.isActive = !video.isActive;
         break;
       }
