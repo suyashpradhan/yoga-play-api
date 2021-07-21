@@ -63,4 +63,15 @@ const VideoSchema = new mongoose.Schema({
 //Creating Mongoose Model
 const Video = mongoose.model("Video", VideoSchema);
 
-module.exports = Video;
+/* const addVideos = async () => {
+  try {
+    videosData.forEach(async (video) => {
+      const newVideo = new Video(video);
+      const savedVideo = await newVideo.save();
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}; */
+
+module.exports = { Video };

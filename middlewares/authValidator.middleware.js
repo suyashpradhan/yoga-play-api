@@ -13,9 +13,10 @@ const authValidator = async (req, res, next) => {
     }
 
     const { _id } = jwt.verify(token, process.env.TOKEN_SECRET);
-    const user = await User.findById({ _id })
-      .select("-password -__v")
-      .populate("likedVideos, watchLater, playlists, history");
+    const user = await User.findOne({_id});
+    if(!user){
+        return res.status(401).json({success:false, errorMessage:"Unauthorized. Either user is not registered or Token is invalid."});
+    }
     req.user = user;
     next();
   } catch (error) {

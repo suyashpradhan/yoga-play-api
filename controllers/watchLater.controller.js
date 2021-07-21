@@ -24,7 +24,6 @@ const fetchUserWatchLaterVideos = async (req, res) => {
   try {
     let { watchLater } = req;
     let watchLaterVideos = await populateVideos(watchLater);
-    console.log(watchLaterVideos);
     res.json({ success: true, watchLaterVideos });
   } catch (err) {
     res.status(500).json({
