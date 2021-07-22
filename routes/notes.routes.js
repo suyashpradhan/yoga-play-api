@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const {
   fetchUserNotes,
-createNewNote,
-updateNote,
-deleteNote,
+  createNewNote,
+  updateNote,
+  deleteNote,
 } = require("../controllers/notes.controller");
 
-const {fetchNoteById} = require("../controllers/paramHandlers.controller")
+const { fetchNoteById } = require("../controllers/paramHandlers.controller")
 
 const { findVideo } = require("../controllers/video.controller");
 

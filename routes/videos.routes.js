@@ -6,7 +6,15 @@ const {
   fetchSingleVideo,
 } = require("../controllers/videos.controller");
 
+const {findVideoById}  = require("../controllers/paramHandlers.controller")
+
+//Route for fetching all videos
 router.route("/").get(fetchAllVideos);
-router.route("/:id").get(fetchSingleVideo);
+
+//Getting videoId via params
+router.param("videoId",findVideoById);
+
+//Fetching single video based on videoId
+router.route("/:videoId").get(fetchAllVideos);
 
 module.exports = router;

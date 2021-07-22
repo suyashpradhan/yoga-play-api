@@ -9,4 +9,19 @@ const fetchNoteById = async (req, res, next, noteId) => {
   next();
 };
 
-module.exports = { fetchNoteById }
+const findVideoById = async (req, res, next, videoId) => {
+  try {
+    const video = await Video.findById(videoId);
+    if (!video) {
+      throw Error("Unable to fetch the video");
+    }
+    req.video = video;
+    next();
+  } catch (err) {
+    res
+      .status(400)
+      .json({ success: false, message: "Unable to retrive the video" });
+  }
+};
+
+module.exports = { fetchNoteById, findVideoById }

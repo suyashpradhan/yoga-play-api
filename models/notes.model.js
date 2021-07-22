@@ -14,10 +14,10 @@ const NoteSchema = new Schema(
     title: {
       type: String,
       required: [true, "Note Title is required"]
-    }
+    },
     content: {
       type: String
-    }
+    },
     isActive: {
       type: Boolean
     }

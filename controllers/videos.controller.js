@@ -11,13 +11,8 @@ const fetchAllVideos = async (req, res) => {
 };
 
 const fetchSingleVideo = async (req, res) => {
-  const id = req.params.id;
-  try {
-    const video = await Video.findById(id).exec();
-    res.status(200).json({ success: true, video });
-  } catch (err) {
-    res.status(400).json({ status: false, message: `Invalid Video Id` });
-  }
+  const { video } = req;
+  res.status(201).json({ success: true, video });
 };
 
 module.exports = { fetchAllVideos, fetchSingleVideo };
